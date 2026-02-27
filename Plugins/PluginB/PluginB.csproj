@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>10.0</LangVersion>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- 复制配置文件到输出目录 -->
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- 构建后复制到 Host/Plugins 目录 -->
+  <Target Name="CopyToPluginsFolder" AfterTargets="Build">
+    <PropertyGroup>
+      <PluginOutputPath>$(SolutionDir)Host\Plugins\PluginB\</PluginOutputPath>
+    </PropertyGroup>
+    <MakeDir Directories="$(PluginOutputPath)" Condition="!Exists('$(PluginOutputPath)')" />
+    <Copy SourceFiles="$(OutputPath)PluginB.dll" DestinationFolder="$(PluginOutputPath)" />
+    <Copy SourceFiles="$(OutputPath)appsettings.json" DestinationFolder="$(PluginOutputPath)" Condition="Exists('$(OutputPath)appsettings.json')" />
+  </Target>
+
+</Project>
